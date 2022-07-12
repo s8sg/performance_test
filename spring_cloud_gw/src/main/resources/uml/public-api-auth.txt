@@ -1,0 +1,16 @@
+@startuml
+
+Actor User
+
+User -> LoadBalancer : Request with JWT Token
+LoadBalancer -> API_GATEWAY : Request with JWT Token
+API_GATEWAY -> API_GATEWAY : Validate using public key from cache
+
+alt Valid Token
+    API_GATEWAY -> API_GATEWAY : Get user_id from JWT
+    API_GATEWAY -> API_GATEWAY : SET X-USER-ID = user_id
+    API_GATEWAY -> SERVICE : Forward to service based on matching route
+else Invalid Token
+    API_GATEWAY -> User : Return UNAUTHORISED
+end
+@enduml

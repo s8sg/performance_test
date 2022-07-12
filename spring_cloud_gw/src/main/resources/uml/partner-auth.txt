@@ -1,0 +1,24 @@
+
+@startuml
+
+Actor Partner
+
+Partner -> LoadBalancer
+LoadBalancer -> API_GATEWAY
+API_GATEWAY -> API_GATEWAY : Check route for request URL
+
+alt Request route has /partner/*
+    API_GATEWAY -> API_GATEWAY : Validate using basic auth
+    alt Valid Auth token
+        API_GATEWAY -> API_GATEWAY : Validate IP whitelist using filter
+        alt Request is from whitelisted IP
+            API_GATEWAY -> API_GATEWAY : Set X-USER-NAME Header
+            API_GATEWAY -> CASHLOAN_SERVICE : Forward request
+        else Request is not from whitelisted IP
+            API_GATEWAY -> Partner : Unauthorised
+        end
+    else Invalid token
+        API_GATEWAY -> Partner : Unauthorised
+    end
+end
+@enduml

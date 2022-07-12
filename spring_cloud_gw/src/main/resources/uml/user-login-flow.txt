@@ -1,0 +1,30 @@
+
+@startuml
+
+Actor User
+
+User -> LoadBalancer
+LoadBalancer -> API_GATEWAY
+API_GATEWAY -> API_GATEWAY : Check route for request URL
+
+alt Request route has /login/*
+    API_GATEWAY -> AUTH_SERVICE : Forward with token from User
+    AUTH_SERVICE -> Go_Auth : Vefiy code
+    AUTH_SERVICE <-- Go_Auth
+    alt Valid GoAuth Code - Verify whitelisted user in CIF
+            AUTH_SERVICE -> CIF
+            CIF --> AUTH_SERVICE
+
+
+            alt Whitelisted/Eligible User in CIF
+                AUTH_SERVICE -> AUTH_SERVICE : Generate JWT token
+                AUTH_SERVICE -> API_GATEWAY
+            else Non Whitelisted User / Not present in CIF
+                AUTH_SERVICE -> API_GATEWAY : Return UNAUTHORISED
+            end
+    else Invalid GoAuth Code
+    AUTH_SERVICE -> API_GATEWAY : Return UNAUTHORISED
+    end
+end
+
+@enduml

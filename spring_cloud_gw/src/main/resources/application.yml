@@ -1,0 +1,21 @@
+server:
+  port: 8080
+  error:
+    whitelabel:
+      enabled: false
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        - id: mock
+          uri: "http://mock-server:1080"
+          predicates:
+          - Path=/mockserver/status
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: DEBUG

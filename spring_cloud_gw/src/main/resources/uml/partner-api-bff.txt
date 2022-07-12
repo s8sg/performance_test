@@ -1,0 +1,8 @@
+@startuml
+
+Actor User
+
+KP -> CASHLOAN_SERVICE : Callback from KP forwarded by Gateway after auth\nwith X-USERNAME
+CASHLOAN_SERVICE ->  CASHLOAN_SERVICE : Perform desired operation
+CASHLOAN_SERVICE -> KP
+@enduml

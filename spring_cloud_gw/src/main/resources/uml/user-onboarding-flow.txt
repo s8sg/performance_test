@@ -1,0 +1,18 @@
+@startuml
+
+Database DB
+Queue Kafka
+
+alt For each kafka event
+    Airflow -> Kafka : {external_ref_id , type}
+    Kafka -> CIF
+    CIF -> CIF : Check if user exist for external_ref_id
+
+    alt if use do not exist
+        CIF -> DB : Create user
+    else
+        CIF -> DB: Update user
+    end
+end
+
+@enduml

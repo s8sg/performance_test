@@ -1,0 +1,14 @@
+@startuml
+
+Actor User
+User -> API_GATEWAY
+API_GATEWAY -> CASHLOAN_SERVICE : with X-USER-ID
+alt X-USER-ID header present
+    CASHLOAN_SERVICE -> KP : Acting as proxy for KP \nand using user id from X-USER-ID
+    CASHLOAN_SERVICE <-- KP
+    API_GATEWAY <-- CASHLOAN_SERVICE
+    User <-- API_GATEWAY
+else X-USER-ID header present missing
+    CASHLOAN_SERVICE -> User : Return Bad Request
+end
+@enduml

@@ -1,0 +1,8 @@
+
+@startuml
+alt On API Gatway startup
+API_GATEWAY -> AUTH_SERVICE : GET /public-key
+API_GATEWAY <-- AUTH_SERVICE : public key from JWT key-pair
+API_GATEWAY -> API_GATEWAY : Store in local cache
+end
+@enduml
