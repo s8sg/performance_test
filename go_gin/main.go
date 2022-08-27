@@ -6,14 +6,20 @@ import (
 	"net/http"
 )
 
+var client *http.Client
+
 func main() {
 	router := gin.Default()
-	router.PUT("/mockserver/status", syncHandler)
+	client = &http.Client{
+		Transport: &http.Transport{
+			MaxIdleConnsPerHost: 5000,
+		},
+	}
+	router.PUT("/mockserver/status", asyncHandler)
 	router.Run(":8080")
 }
 
 func syncHandler(c *gin.Context) {
-	client := &http.Client{}
 
 	req, err := http.NewRequest(http.MethodPut, "http://mock-server:1080/mockserver/status", bytes.NewBuffer([]byte{}))
 	if err != nil {
@@ -34,8 +40,6 @@ func syncHandler(c *gin.Context) {
 }
 
 func asyncHandler(c *gin.Context) {
-	client := &http.Client{}
-
 	responseChan := make(chan *http.Response, 0)
 
 	go func() {
@@ -53,10 +57,9 @@ func asyncHandler(c *gin.Context) {
 	}()
 
 	resp := <-responseChan
-	reader := resp.Body
-	defer reader.Close()
+	defer resp.Body.Close()
 	contentLength := resp.ContentLength
 	contentType := resp.Header.Get("Content-Type")
 	extraHeaders := map[string]string{}
-	c.DataFromReader(http.StatusOK, contentLength, contentType, reader, extraHeaders)
+	c.DataFromReader(http.StatusOK, contentLength, contentType, resp.Body, extraHeaders)
 }
