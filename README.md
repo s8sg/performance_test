@@ -5,7 +5,7 @@ docker-compose build
 ```
 ## Run Servers
 ```sh
-docker-compose up -d
+docker-compose down && docker-compose up -d
 ```
 
 ## Run Performance Test
